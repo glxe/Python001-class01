@@ -5,9 +5,10 @@
 #### 1、用requests写一个最简单的爬虫  
 
 开发程序的四个步骤：**提出需求、编码、代码run起来，修复和完善**  
-使用requests库，伪造user-agent，来获取网页的源代码。当然requests不仅仅获取网页源码，还携带cookie，身份认证，代理支持，文件分块上传，下载等等很多的事情。
+使用 [requests](https://requests.readthedocs.io/zh_CN/latest/) 库，伪造user-agent，来获取网页的源代码。当然requests不仅仅获取网页源码，还携带cookie，身份认证，代理支持，文件分块上传，下载等等很多的事情。
 
 #### 2、使用BeautifulSoup解析爬取到的网页  
+[Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc.zh/) 是一个可以从HTML或XML文件中提取数据的Python库.它能够通过你喜欢的转换器实现惯用的文档导航,查找,修改文档的方式.Beautiful Soup会帮你节省数小时甚至数天的工作时间.
 
 安装第三方库需要使用 **pip**，具体使用方法：
 ```
