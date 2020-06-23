@@ -189,6 +189,57 @@ for url in urls:
 ```
 
 #### 5、Python基础语法的回顾  
+
+python的一些基础介绍
+* [Python 简介](https://docs.python.org/zh-cn/3.7/tutorial/introduction.html)  
+* [Python 数据结构](https://docs.python.org/zh-cn/3.7/tutorial/datastructures.html)  
+* [Python 其他流程控制工具](https://docs.python.org/zh-cn/3.7/tutorial/controlflow.html)  
+* [Python 中的类](https://docs.python.org/zh-cn/3.7/tutorial/classes.html)  
+* [Python 定义函数](https://docs.python.org/zh-cn/3.7/tutorial/controlflow.html#defining-functions)
+
+
+dir查看包里的所有函数名称  
+help查看所有函数的用法
+
+关键字：  
+| | | | | | |
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| False | True | None | class | type | and |  
+| def | del | if | elif | else | as |
+| break | continue | for | from | import | in |
+| pass | not | is | or | return | try |
+| except | while | assert | finally | nonlocal | lambda |
+| raise | with | yield |  |  |  |
+
+需要注意的是，不能使用关键来作为变量  
+
+基本数据类型  
+|数据类型|举例|
+|-|-|
+|整型（int）|-1、0、4|
+|浮点型（float）|5.2、3.1415926|
+|布尔值（bool）|False、True|
+|空值|NULL|
+|字符串（str）|‘geekbang’，‘4.5’|
+|列表（list）|[1, 3, 5, 66, ]|
+|元祖（tuple）|{1, 3, 7, 8, 48}|
+|字典（dict）|{'a': 1, 'b': 3}|
+|集合|{'apple', 'orange', 'banana', 'pear'}|
+
+
+```
+#推导式写法
+
+tuple(f'url?start={page * 25}' for page in range(10))
+
+#展开写法
+a = []
+for page in range(10):
+    a.append(f'url?start={page * 25}')
+tuple(a)
+```
+
+
 #### 6、前端基础：HTML结构  
 #### 7、前端基础：HTTP协议  
 #### 8、Scrapy框架结构解析  
