@@ -241,9 +241,88 @@ tuple(a)
 
 
 #### 6、前端基础：HTML结构  
+* HTTP协议与浏览器的关系  
+* HTTP协议请求与返回头部  
+* HTTP请求方式 get post delete put head  
+* HTTP状态码  
+* W3C标准  
+* HTML常用标签和属性
+* CSS、JavaScript、JSON简介
 #### 7、前端基础：HTTP协议  
+![服务端<=>客户端](../image/20200626175523.png)  
+|HTTP状态码||
+|--|--|
+|1XX|信息响应|
+|2XX|成功响应|
+|3XX|重定向|
+|4XX|客户端响应|
+|5XX|服务端响应|  
+  
 #### 8、Scrapy框架结构解析  
+[Scrapy 架构官方文档介绍](https://docs.scrapy.org/en/latest/topics/architecture.html)  
+  
+![Scrapy](../image/scrapy_architecture_02.png)  
+  
+Scrapy 核心组件  
+
+|Scrapy|简介|
+|-|-|
+|引擎（engine）|‘大脑’，指挥其他组件协同工作|
+|调度器（Scheduler）|调度器接收引擎发过来的请求，按照先后顺序，压入队列中，同时去除重复的请求|
+|下载器（Downloader）|下载器用于下载网页内容，并返回给爬虫|
+|爬虫（Spiders）|用于从特定的网页中提取需要的信息，即所谓的实体（item）用户也可以从中提取出链接，让Scrapy继续抓取下一个页面|
+|项目管道（item pipelines）|项目管道负责处理爬虫从网页中抽取的实体。主要的功能是持久化实体，验证实体的有效性、清除不需要的信息等。|
+|下载器中间件（Downloader Middlewares）||
+|爬虫中间件（Spider Middlewares）||  
+![Scrapy](../image/20200626195243.png)  
+
+|组件|对应爬虫三大流程|Scrapy项目是否需要修改|
+|-|-|-|
+|引擎（engine）||无需修改，框架已写好|
+|调度器（Scheduler）||无需修改，框架已写好|
+|下载器（Downloader）|获取网页（requests库）|无需修改，框架已写好|
+|爬虫（Spiders）|解析网页（BeautifulSoup库）|需要|
+|项目管道（item pipelines）|存储数据（存入csv txt MySQL等）|需要|
+|下载器中间件（Downloader Middlewares）|获取网页-个性化部分|一般不用|
+|爬虫中间件（Spider Middlewares）|获取网页-个性化部分|一般不用|  
+
 #### 9、Scrapy爬虫目录结构解析  
+```
+pip install scrapy
+
+#创建爬虫项目
+scrapy startproject spiders 
+cd spiders 
+#项目初始化
+scrapy genspider douban_movies douban.com
+
+Created spider 'douban_movies' using template 'basic' in module:
+  spiders.spiders.douban_movies
+
+
+tree
+#初始化后的目录结构
+D:.
+│  scrapy.cfg
+│
+└─spiders
+    │  items.py
+    │  middlewares.py
+    │  pipelines.py
+    │  settings.py
+    │  __init__.py
+    │
+    ├─spiders
+    │  │  douban_movies.py
+    │  │  __init__.py
+    │  │
+    │  └─__pycache__
+    │          __init__.cpython-38.pyc
+    │
+    └─__pycache__
+            settings.cpython-38.pyc
+            __init__.cpython-38.pyc
+```
 #### 10、将requests爬虫改写为Scrapy爬虫  
 #### 11、通过Scrapy爬虫爬取电影详情页信息  
 #### 12、XPath详解  
