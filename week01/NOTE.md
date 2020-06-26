@@ -13,19 +13,19 @@
 [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc.zh/) 是一个可以从HTML或XML文件中提取数据的Python库.它能够通过你喜欢的转换器实现惯用的文档导航,查找,修改文档的方式.Beautiful Soup会帮你节省数小时甚至数天的工作时间.
 
 安装第三方库需要使用 **pip**，具体使用方法：
-```
+```bash
 pip install other
 ```
 
 或者使用此命令来迁移代码，如下命令：
-```
+```sheel
 pip install -r requirements.txt
-// requirements.txt 为约定俗成的文件名
+# requirements.txt 为约定俗成的文件名
 ```
 这样，就能不同的机器或不同的环境下统一第三方包的版本了。
 
 引入第三方库的方式：
-```
+```python
 方式1
 import package
 方式2
@@ -33,7 +33,7 @@ from libray import package [as alias]
 ```
 
 使用beautifulSoup库的例子：
-```
+```python
 import requests
 from bs4 import BeautifulSoup as b4
 
@@ -61,7 +61,7 @@ lxml是处理XML和HTML的python语言，解析的时候，自动处理各种编
     pip install lxml
 ```
 
-```
+```html
 html 实例
 
 <!DOCTYPE html>
@@ -87,7 +87,7 @@ html（变量）， html.html（文件名）将被用于下面
 用法：  
 （1）HTML读取
 
-```
+```python
 #直接读取
 html = "html内容";
 from lxml import etree
@@ -95,7 +95,7 @@ html = etree.HTML(html)
 ```
 （2）获取标签
 获取所有a标签，这种html内容有多种写法，可以直接得到4个元素
-```
+```python
 # //a: 获取html下的所有a标签 
 a_tags = html.xpath('//a')
 
@@ -114,7 +114,7 @@ Python Data Analysis Library 或 pandas 是基于NumPy 的一种工具，该工�
 DataFrame：二维的表格型数据结构。很多功能与R中的data.frame类似。可以将DataFrame理解为Series的容器。
 
 使用lxml 和 pandas 库的例子：
-```
+```python
 import requests
 import lxml.etree
 url = "https://movie.douban.com/subject/1292052/"
@@ -149,7 +149,7 @@ movieOne.to_csv('./movieOne.csv', encoding = 'utf8', index = False, header = Fal
 #### 4、实现爬虫的自动翻页功能  
 
 小结：
-```
+```python
 import requests
 from bs4 import BeautifulSoup as b4
 from lxml import etree
@@ -227,7 +227,7 @@ help查看所有函数的用法
 |集合|{'apple', 'orange', 'banana', 'pear'}|
 
 
-```
+```python
 #推导式写法
 
 tuple(f'url?start={page * 25}' for page in range(10))
@@ -272,8 +272,10 @@ Scrapy 核心组件
 |下载器（Downloader）|下载器用于下载网页内容，并返回给爬虫|
 |爬虫（Spiders）|用于从特定的网页中提取需要的信息，即所谓的实体（item）用户也可以从中提取出链接，让Scrapy继续抓取下一个页面|
 |项目管道（item pipelines）|项目管道负责处理爬虫从网页中抽取的实体。主要的功能是持久化实体，验证实体的有效性、清除不需要的信息等。|
-|下载器中间件（Downloader Middlewares）||
-|爬虫中间件（Spider Middlewares）||  
+|下载器中间件（Downloader Middlewares）|-|
+|爬虫中间件（Spider Middlewares）|-|  
+
+  
 ![Scrapy](../image/20200626195243.png)  
 
 |组件|对应爬虫三大流程|Scrapy项目是否需要修改|
@@ -287,7 +289,7 @@ Scrapy 核心组件
 |爬虫中间件（Spider Middlewares）|获取网页-个性化部分|一般不用|  
 
 #### 9、Scrapy爬虫目录结构解析  
-```
+```python
 pip install scrapy
 
 #创建爬虫项目
@@ -324,6 +326,7 @@ D:.
             __init__.cpython-38.pyc
 ```
 #### 10、将requests爬虫改写为Scrapy爬虫  
+
 #### 11、通过Scrapy爬虫爬取电影详情页信息  
 #### 12、XPath详解  
 #### 13、Scrapy选择器  
