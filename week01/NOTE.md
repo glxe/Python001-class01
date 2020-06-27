@@ -326,8 +326,43 @@ D:.
             __init__.cpython-38.pyc
 ```
 #### 10、将requests爬虫改写为Scrapy爬虫  
+```python
+import scrapy
+from bs4 import BeautifulSoup
+from spiders.items import SpidersItem
 
+class DoubanMoviesSpider(scrapy.Spider):
+    name = 'douban_movies'
+    allowed_domains = ['movie.douban.com']
+    start_urls = ['https://movie.douban.com/top250']
+
+    # 爬虫启动时，引擎自动调用该方法，并且只会被调用一次，用于生成初始的请求对象（Request）
+    # start_requests()方法读取start_urls列表中的URL并生成Request对象，发送给引擎
+    # 引擎再指挥其他组件向网站服务器发送请求，下载网页
+    def start_requests(self):
+        for i in range(0, 10):
+            url = f'https://movie.douban.com/top250?start={i*25}'
+            yield scrapy.Request(url = url, callback=self.parse)
+
+    # 解析函数
+    def parse(self, response):
+        items = []
+        soup = BeautifulSoup(response.text, 'html.parser')
+        title_list = soup.find_all('div', attrs={'class': 'hd'})
+        for title in title_list:
+            item = SpidersItem()
+            item['title'] = title.find('a').find('span',).text
+            item['link'] = title.find('a').get('href')
+            items.append(item)
+        return items
+
+```
 #### 11、通过Scrapy爬虫爬取电影详情页信息  
 #### 12、XPath详解  
 #### 13、Scrapy选择器  
 
+
+
+
+## 问题
+Scrapy的 start_requests  是不是类继承的函数重写?
