@@ -398,6 +398,12 @@ class DoubanMoviesSpider(scrapy.Spider):
 
 ```
 #### 12、XPath详解  
+
+* [Scrapy Xpath 官方学习文档](https://docs.scrapy.org/en/latest/topics/selectors.html#working-with-xpaths)  
+* [Xpath 中文文档](https://www.w3school.com.cn/xpath/index.asp)  
+* [Xpath 英文文档](https://www.w3.org/TR/2017/REC-xpath-31-20170321/#nt-bnf)  
+
+   
 ```python
 import scrapy
 # from bs4 import BeautifulSoup
@@ -443,8 +449,12 @@ class DoubanMoviesSpider(scrapy.Spider):
         yield item
 
 ```
-#### 13、Scrapy选择器  
+#### 13、yield与推导式 
+* [yield 表达式官方文档](https://docs.python.org/zh-cn/3.7/reference/expressions.html#yieldexpr) 
+* [yield 语句官方文档](https://docs.python.org/zh-cn/3.7/reference/simple_stmts.html#yield) 
+* [Python 推导式官方文档](https://docs.python.org/zh-cn/3.7/tutorial/datastructures.html#list-comprehensions)   
 
+* [(译)Python关键字yield的解释(stackoverflow)](https://pyzh.readthedocs.io/en/latest/the-python-yield-keyword-explained.html)
 
 
 
