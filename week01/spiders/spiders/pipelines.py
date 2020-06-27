@@ -15,7 +15,7 @@ class SpidersPipeline:
         link = item['link']
         content = item['content']
         output = f'|{title}|\t|{link}|\t|{content}|\n\n'
-        with open('./movies.txt', 'a+', encoding='utf-8') as artical:
+        with open('./moviesUseXpath.txt', 'a+', encoding='utf-8') as artical:
             artical.write(output)
             artical.close()
         return item

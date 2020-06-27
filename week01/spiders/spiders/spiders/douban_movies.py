@@ -1,5 +1,6 @@
 import scrapy
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
+from scrapy.selector import Selector
 from spiders.items import SpidersItem
 
 class DoubanMoviesSpider(scrapy.Spider):
@@ -19,18 +20,21 @@ class DoubanMoviesSpider(scrapy.Spider):
     # 解析函数
     def parse(self, response):
         items = []
-        soup = BeautifulSoup(response.text, 'html.parser')
-        title_list = soup.find_all('div', attrs={'class': 'hd'})
-        for title in title_list:
+        movies = Selector(response).xpath('//div[@class="hd"]')
+        for movie in movies:
             item = SpidersItem()
-            item['title'] = title.find('a').find('span',).text
-            item['link'] = title.find('a').get('href')
+            titleData = movie.xpath('./a/span/text()')
+            linkData = movie.xpath('./a/@href')
+            item['title'] = titleData.extract_first()
+            item['link'] = linkData.extract_first()
             items.append(item)
             yield scrapy.Request(url=item['link'], meta = {'item': item}, callback=self.parse2)
 
     def parse2(self, response):
         item = response.meta['item']
-        soup = BeautifulSoup(response.text, 'html.parser')
-        content = soup.find('div', attrs={'class': 'related-info'}).get_text().strip()
-        item['content'] = content
+        movie = Selector(response).xpath('//*[@class="indent"]/span[1]/text()')
+        if (movie.extract_first().strip() == ''):
+            movie = Selector(response).xpath('//*[@class="indent"]/span[2]')
+
+        item['content'] = movie.extract_first().strip()
         yield item
