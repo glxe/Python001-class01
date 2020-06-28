@@ -1,5 +1,12 @@
 # 学习笔记（week one）
 
+
+## week one 作业  
+
+* [作业一](./maoyan_demo1.py)
+* [作业2二](./spiders/spiders/spiders/maoyanMovies.py)
+
+
 ## 使用python库获取豆瓣影评
 
 #### 1、用requests写一个最简单的爬虫  
