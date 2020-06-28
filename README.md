@@ -1,3 +1,11 @@
+# 作业
+## week one
+- [作业一](./maoyan_demo1.py)  
+- [作业二](./spiders/spiders/spiders/maoyanMovies.py)
+
+
+***
+
 # 极客大学「Python进阶训练营-第1期」作业提交仓库
 
 ## 讲师课件下载地址

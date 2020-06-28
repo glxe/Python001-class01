@@ -4,8 +4,9 @@
 ## week one 作业  
 
 * [作业一](./maoyan_demo1.py)
-* [作业2二](./spiders/spiders/spiders/maoyanMovies.py)
+* [作业二](./spiders/spiders/spiders/maoyanMovies.py)
 
+***
 
 ## 使用python库获取豆瓣影评
 
