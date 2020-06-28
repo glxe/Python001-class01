@@ -10,12 +10,12 @@ from itemadapter import ItemAdapter
 
 class SpidersPipeline:
     def process_item(self, item, spider):
-
+        print('glxe-glxe-glxe-glxe-glxe-glxe-glxe-glxe')
         title = item['title']
-        link = item['link']
-        content = item['content']
-        output = f'|{title}|\t|{link}|\t|{content}|\n\n'
-        with open('./moviesUseXpath.txt', 'a+', encoding='utf-8') as artical:
+        t = item['type']
+        time = item['time']
+        output = f'|{title}|\t|{t}|\t|{time}|\n\n'
+        with open('./maoyanUseXpath.txt', 'a+', encoding='utf-8') as artical:
             artical.write(output)
             artical.close()
         return item
