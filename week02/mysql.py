@@ -48,3 +48,14 @@ if __name__ == "__main__":
     db = ConnDB(dbInfo=dbInfo, sqls=sqls)
     db.run()
     print(result);
+
+
+
+
+
+from fake_useragent import UserAgent
+
+
+ua = UserAgent(verify_ssl=False)
+
+ua.chrome
