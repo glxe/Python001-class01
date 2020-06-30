@@ -60,4 +60,5 @@ try:
 except Exception as e:
     print(e)
 finally:    
-    browser.close()
+    # browser.close()
+    pass
