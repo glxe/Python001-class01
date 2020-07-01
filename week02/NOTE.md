@@ -538,7 +538,8 @@ print(codeStr)
 * [基于Tesseract的OCR识别](https://www.jianshu.com/p/f0f05ff2dc2e)
 * [各种语言识别库](https://github.com/tesseract-ocr/tessdata)
 ### 爬虫中间件和系统代理IP  
-
+***中间件***主要对Spider蜘蛛以及Downloader下载器来做增强，或定制化开发，从而开发出可以适应不同情况的爬虫。当然中间件可以有多个。优先级。根据权重值，来使多个中间件的先后运行顺序
+* [Scrapy详解之中间件（Middleware）](https://zhuanlan.zhihu.com/p/42498126)
 ### 自定义中间件和随机代理IP  
 
 ### 分布式爬虫  
