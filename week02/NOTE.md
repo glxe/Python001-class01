@@ -540,10 +540,40 @@ print(codeStr)
 ### 爬虫中间件和系统代理IP  
 ***中间件***主要对Spider蜘蛛以及Downloader下载器来做增强，或定制化开发，从而开发出可以适应不同情况的爬虫。当然中间件可以有多个。优先级。根据权重值，来使多个中间件的先后运行顺序
 * [Scrapy详解之中间件（Middleware）](https://zhuanlan.zhihu.com/p/42498126)
-### 自定义中间件和随机代理IP  
 
+[问题1](#wenti1)
+```python
+
+# -*- coding: utf-8 -*-
+import scrapy
+
+# windows中执行不成功
+
+#export http_proxy = "http://52.179.231.206:80"
+# setting 增加scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware
+# 通过 Request.meta['proxy'] 读取 http_proxy 环境变量加载代理
+
+class HttpbinSpider(scrapy.Spider):
+    name = 'httpbin'
+    allowed_domains = ['httpbin.org']
+    start_urls = ['http://httpbin.org/ip']
+
+    def parse(self, response):
+        print(response.text)
+
+```
+```
+scrapy crawl httpbin --nolog # 不打印debug日志
+```
+### 自定义中间件和随机代理IP  
+如何编写一个下载中间件？一般需要重写下面四个主要方法：
+* ***process_request(request, spider)*** Request 对象经过下载中间件时会被调用，优先级高的先调用  
+* ***process_response(request, response, spider)*** Response 对象经过下载中间件时会被调用，优先级高的后调用  
+* ***process_exception(request, exception, spider)*** 当 process_exception() 和 process_request() 抛出异常是会被调用  
+* ***from_crawler(cls, crawler)*** 使用crawler 来创建中间件对象，并（必须）返回一个中间件对象   
 ### 分布式爬虫  
 
 
 
-### 
+## <a id="wenti1">问题1</a>
+在 设置环境变量时，linux和winsows是不同，linux中 ```export http_proxy="http://52.179.231.206:80"``` ，windows是 ```set http_proxy="http://52.179.231.206:80"``` ,然后linux能执行成功。windows却不行？
