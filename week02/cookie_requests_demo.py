@@ -15,8 +15,8 @@ header = {
 login_url = 'https://accounts.douban.com/j/mobile/login/basic'
 form_data = {
     'ck': '',
-    'name': '15370383786',
-    'password': 'funcid79325',
+    'name': '15888888888',
+    'password': 'sfds',
     'remember': 'false',
     'ticket': ''
 }

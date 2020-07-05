@@ -399,8 +399,8 @@ try:
     btm1 = browser.find_element_by_xpath('/html/body/div[1]/div[1]/ul[1]/li[2]')
     btm1.click()
 
-    browser.find_element_by_xpath('//*[@id="username"]').send_keys('15370383786')
-    browser.find_element_by_xpath('//*[@id="password"]').send_keys('funcid79325')
+    browser.find_element_by_xpath('//*[@id="username"]').send_keys('15888888888')
+    browser.find_element_by_xpath('//*[@id="password"]').send_keys('sdfss')
     time.sleep(1)
     loginBtn = browser.find_element_by_xpath('//a[@class="btn btn-account btn-active"]')
     loginBtn.click()
@@ -423,8 +423,8 @@ try:
     time.sleep(2)
     browser.find_element_by_xpath('//button[@class="login-button btn_hover_style_8"]').click()
     time.sleep(3)
-    browser.find_element_by_xpath('//input[@name="mobileOrEmail"]').send_keys('15370383786')
-    browser.find_element_by_xpath('//input[@name="password"]').send_keys('funcid79325')
+    browser.find_element_by_xpath('//input[@name="mobileOrEmail"]').send_keys('15888888888')
+    browser.find_element_by_xpath('//input[@name="password"]').send_keys('sdfs')
     time.sleep(2)
     loginBtn = browser.find_element_by_xpath('//button[@class="sm-button submit sc-1n784rm-0 bcuuIb"]')
     loginBtn.click()
@@ -573,7 +573,61 @@ scrapy crawl httpbin --nolog # 不打印debug日志
 * ***from_crawler(cls, crawler)*** 使用crawler 来创建中间件对象，并（必须）返回一个中间件对象   
 ### 分布式爬虫  
 
+Scrapy 原生不支持分布式，多机之间需要实现redis队列和管道共享，而scrapy-redis很好的实现了Scrapy和redis的集成
+使用scrapy-redis之后Scrapy主要的变化：
+1.使用RedisSpider类替代了Spider类
+2.Scheduler的queue由Redis实现
+3.item pipeline 由redis实现
 
+安装并开启 ```pip install scrapy-redis```
+
+
+开启redis并以守护进程方式：在redis.conf中加入 ```daemonize yes``` 后即可以守护进程方式运行
+
+
+```python
+# setting 
+#redis info
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = 6379
+
+#scheduler queue
+SCHEDULER = 'scrapy_redis.scheduler.Scheduler'
+
+#remove duplicate
+DUPEFILTER_CLASS = 'scrapy_redis.dupefilter.RFPDupeFilter'
+
+#requests default queue priority
+#Requests的默认优先级队列
+SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
+
+# 将Requests队列持久化到Redis，可支持暂停或重启爬虫
+SCHEDULER_PERSIST = True
+
+# 将爬取到的内容 保存到redis
+ITEM_PIPELINES = {
+    'scrapy_redis.pipelines.RedisPipeline': 300
+}
+```
+
+```python
+# 保存百度首页
+import scrapy
+from redemospider.items import RedemospiderItem
+
+class BaiduSpider(scrapy.Spider):
+    name = 'baidu'
+    allowed_domains = ['www.baidu.com']
+    start_urls = ['https://www.baidu.com/']
+
+    def parse(self, response):
+       print(response.text)
+       text = response.text
+       item = RedemospiderItem()
+       item['text'] = text
+       yield item
+
+```
 
 ## <a id="wenti1">问题1</a>
 在 设置环境变量时，linux和winsows是不同，linux中 ```export http_proxy="http://52.179.231.206:80"``` ，windows是 ```set http_proxy="http://52.179.231.206:80"``` ,然后linux能执行成功。windows却不行？

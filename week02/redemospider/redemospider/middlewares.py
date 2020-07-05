@@ -2,17 +2,14 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+
 from scrapy import signals
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
-from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware
-from collections import defaultdict
-from scrapy.exceptions import NotConfigured
-from urllib.parse import urlparse
-import random
 
-class ProxyspiderSpiderMiddleware:
+
+class RedemospiderSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
@@ -59,7 +56,7 @@ class ProxyspiderSpiderMiddleware:
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class ProxyspiderDownloaderMiddleware:
+class RedemospiderDownloaderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
@@ -104,23 +101,3 @@ class ProxyspiderDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
-
-class RandomHttpProxyMiddleware(HttpProxyMiddleware):
-    def __init__(self, auth_encoding='utf-8', proxy_list = None):
-        self.proxies = defaultdict(list)
-        for proxy in proxy_list:
-            parse = urlparse(proxy)
-            self.proxies[parse.scheme].append(proxy)
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        if not crawler.settings.get('HTTP_PROXY_LIST'):
-            raise NotConfigured
-        
-        http_proxy_list = crawler.settings.get('HTTP_PROXY_LIST')
-        auth_encoding = crawler.settings.get('HTTPPROXY_AUTH_ENCODING', 'utf-8')
-        return cls(auth_encoding, http_proxy_list)
-
-    def _set_proxy(self, request, scheme):
-        proxy = random.choice(self.proxies[scheme])
-        request.meta['proxy'] = proxy

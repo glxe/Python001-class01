@@ -1,4 +1,4 @@
-# Scrapy settings for proxyspider project
+# Scrapy settings for redemospider project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,17 +7,18 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'proxyspider'
+BOT_NAME = 'redemospider'
 
-SPIDER_MODULES = ['proxyspider.spiders']
-NEWSPIDER_MODULE = 'proxyspider.spiders'
+SPIDER_MODULES = ['redemospider.spiders']
+NEWSPIDER_MODULE = 'redemospider.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'proxyspider (+http://www.yourdomain.com)'
+# USER_AGENT = 'redemospider (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
+# FEED_EXPORT_ENCODING = 'utf-8'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -45,21 +46,15 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'proxyspider.middlewares.ProxyspiderSpiderMiddleware': 543,
+#    'redemospider.middlewares.RedemospiderSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
-   'proxyspider.middlewares.ProxyspiderDownloaderMiddleware': 543,
-   'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
-   'proxyspider.middlewares.RandomHttpProxyMiddleware': 400
-}
-HTTP_PROXY_LIST = [
-    'http://58.61.154.153:8080',
-    'http://113.196.140.162:8888',
-    'http://61.135.186.222:80',
-]
+# DOWNLOADER_MIDDLEWARES = {
+#    'redemospider.middlewares.RedemospiderDownloaderMiddleware': 543,
+# }
+
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
@@ -69,7 +64,7 @@ HTTP_PROXY_LIST = [
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    'proxyspider.pipelines.ProxyspiderPipeline': 300,
+#    'redemospider.pipelines.RedemospiderPipeline': 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -92,3 +87,25 @@ HTTP_PROXY_LIST = [
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+#redis info
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = 6379
+
+#scheduler queue
+SCHEDULER = 'scrapy_redis.scheduler.Scheduler'
+
+#remove duplicate
+DUPEFILTER_CLASS = 'scrapy_redis.dupefilter.RFPDupeFilter'
+
+#requests default queue priority
+#Requests的默认优先级队列
+SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
+
+# 将Requests队列持久化到Redis，可支持暂停或重启爬虫
+SCHEDULER_PERSIST = True
+
+# 将爬取到的内容 保存到redis
+ITEM_PIPELINES = {
+    'scrapy_redis.pipelines.RedisPipeline': 300
+}
