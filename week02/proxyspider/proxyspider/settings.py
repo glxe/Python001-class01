@@ -26,6 +26,9 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 #DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 1
+FEED_EXPORT_ENCODING = 'utf-8'
+
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -56,9 +59,8 @@ DOWNLOADER_MIDDLEWARES = {
    'proxyspider.middlewares.RandomHttpProxyMiddleware': 400
 }
 HTTP_PROXY_LIST = [
-    'http://58.61.154.153:8080',
-    'http://113.196.140.162:8888',
-    'http://61.135.186.222:80',
+    'http://58.87.76.102:3128',
+    'http://220.184.147.98:8060',
 ]
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -68,9 +70,9 @@ HTTP_PROXY_LIST = [
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'proxyspider.pipelines.ProxyspiderPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'proxyspider.pipelines.ProxyspiderPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
