@@ -10,7 +10,7 @@ from itemadapter import ItemAdapter
 
 class SpidersPipeline:
     def process_item(self, item, spider):
-        print('glxe-glxe-glxe-glxe-glxe-glxe-glxe-glxe')
+        print('glxe-glxe-glxe-glxe-glxe-glxe-glxe-glxe')    
         title = item['title']
         t = item['type']
         time = item['time']

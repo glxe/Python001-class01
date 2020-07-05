@@ -2,8 +2,8 @@
 ***
 ## week two 作业  
 
-* [作业一]()
-* [作业二]()
+* [作业一](./maoyanspider/maoyanspider/spiders/maoyan.py)
+* [作业二](./shimo.py)
 
 ***
 
