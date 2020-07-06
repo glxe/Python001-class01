@@ -15,7 +15,7 @@ requests 是同步请求，在请求的时候，在等着一件事做完，再�
 ```python
 #setting.py 参数调优  
 # Configure maximum concurrent(并发) requests performed by Scrapy(default:16)
-CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 32  # 根据服务器性能和目标网站的来调节
 
 # Configure a delay(延迟） for requests for the same website (default:0)
 DOENLOAD_DELAY = 3
