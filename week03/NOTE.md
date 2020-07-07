@@ -66,7 +66,12 @@ Twisted是一个事件驱动型的网络引擎。由于事件驱动编程模型�
 [Python Twisted 介绍](https://blog.csdn.net/hanhuili/article/details/9389433)  
 [Python Twisted 介绍(英文原文)](http://www.aosabook.org/en/twisted.html)  
 ### 多进程：进程的创建  
+多进程，多线程，协程的目的都是希望尽可能多处理任务
+产生新的进程可以使用一下方式：
+* os.fork()
+* multiprocessing.Process()
 
+多进程的第一个问题：进程的父子关系
 ### 多进程：多进程程序调试技巧  
 
 ### 多进程：使用队列实现进程间的通信  
