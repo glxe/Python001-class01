@@ -4,7 +4,7 @@ from twisted.web.client import getPage
 # args 
 # kwargs key => value
 def response(*args, **kwargs):
-    print(args, kwargs)
+    # print(args)
     print('返回网页内容')
 
 def callback(*args):

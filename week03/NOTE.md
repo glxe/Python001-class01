@@ -72,6 +72,74 @@ Twisted是一个事件驱动型的网络引擎。由于事件驱动编程模型�
 * multiprocessing.Process()
 
 多进程的第一个问题：进程的父子关系
+
+```python
+import os
+
+# a = os.fork()
+# print(a)
+# print(11111)
+
+# 执行结果：
+# 73866
+# 11111
+# 0
+# 11111
+# fork函数一旦运行就会生出一条新的进程，2个进程一起执行导致输出了2行 
+# 一个是父进程执行的，一个是子进程执行的
+```
+
+```python
+
+import time
+# 区分父子进程
+res = os.fork()
+print(f'res = {res}')
+
+if res == 0:
+    print(f'我是子进程，我的pid是：{os.getpid()}，我的父进程id是：{os.getppid()}')
+else:
+    print(f'我是父进程，我的pid是：{os.getpid()}')
+    
+# fork运行时，会有两个返回值，返回值大于0时，此进程为父进程，且返回值的数字为子进程的PID，当返回值为0时，此进程为子进程
+# 注意：父进程结束时，子进程并不会随父进程立刻结束。同样，父进程不会等待子进程执行完。
+# 注意：os.fork()无法在windows上运行
+
+```
+
+```python
+
+# 参数
+# multiprocessing.Process(group=None, target=None, name=None, args=(), kwargs={})
+
+# - group: 分组，实际上很少使用，
+# - target: 表示调用对象，你可以传入方法的名字，或者函数名称
+# - name: 别名，相当于给这个进程取一个名字
+# - args: 表示调用对象的位置参数元祖，比如target是函数a，他有两个参数m，n，那么args就传入（m，n）即可
+# - kwargs：表示调用对象的字典
+
+from multiprocessing import Process
+
+
+def f(name):
+    print(f'hello {name}')
+
+if __name__ == '__main__':
+    p = Process(target=f, args=('john',))
+    p.start()
+    p.join() # 等待子进程结束，父进程才能结束
+
+# join(timeout) # 超过多少秒 子进程不结束，则父进程也会立即结束
+# 如果可选参数 timeout 是None（默认值），则该方法将阻塞
+# 知道调用join() 方法的进程终止。如果timeout是一个正数，它最多会阻塞 timeout 秒。
+# 请注意，如果进程终止或方法超时，则该方法返回 None。
+# 检查进程的exitcode以确定它是否终止
+# 一个进程可以合并多次
+# 进程无法并入自身，因为这会导致死锁。
+# 尝试在启动进程之前合并进程是错误的
+```
+
+
 ### 多进程：多进程程序调试技巧  
 
 ### 多进程：使用队列实现进程间的通信  
