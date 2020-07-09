@@ -511,7 +511,170 @@ str_val = mp.Value(c_char_p, b"Hello World")
 ```
 ### 多进程：进程池  
 每一个进程都是需要消耗一个逻辑cpu的
+
+进程池示例：
+```python
+# Pool 类表示一个工作进程池
+# 如果要启动大量的子进程，可以用进程的方式批量创建子进程
+
+from multiprocessing.pool import Pool
+from time import sleep, time
+import random
+import os
+
+def run(name):
+    print("%s子进程开始，进程ID：%d" % (name, os.getpid()))
+    start = time()
+    sleep(random.choice([1, 2, 3, 4]))
+    end = time()
+    print("%s子进程结束，进程ID：%d。耗时%0.2f" % (name, os.getpid(), end - start))
+
+
+if __name__ == '__main__':
+    print('父进程开始')
+    # 创建多个进程，表示可以同时执行的进程数量。默认大小是CPU的核心数
+    cpuCoreCount = os.cpu_count();
+    print(cpuCoreCount)
+    p = Pool(cpuCoreCount)
+    for i in range(10):
+        # 创建进程，放入进程池统一管理
+        p.apply_async(run, args=(i,))
+    #如果我们用的是进程池，在调用join之前必须要先close()，并且在close（）之后不能再继续往进程池添加新的进程
+    p.close()
+
+    # 进程池对象调用join，会等待进程池中所有的子进程结束完毕再去结束父进程
+    p.join()
+    print('父进程结束。')
+    p.terminate()
+
+
+    # close() 如果我们用的是进程池，在调用join之前必须先close，并且在close之后不能再继续往进程池添加新的进程
+    # join 进程池对象调用join，会等待进程池中所有子进程结束完毕再去结束父进程
+    # terminate 一旦运行到此步，不管任务是否完成，立即终止
+```
+
+超时示例：
+```python
+from multiprocessing import Pool
+import time
+import os
+
+
+def f(x):
+    return x*x
+
+if __name__ == '__main__':
+    count = os.cpu_count()
+    with Pool(processes=count) as pool: # 进程包含cpu逻辑数量
+        result = pool.apply_async(f, args=(10,)) # 执行一个子进程
+        print(result.get(timeout=1)) # 显示执行结果
+
+        result = pool.apply_async(time.sleep, args=(10, ))
+        print(result.get())
+```
 ### 多线程：创建线程  
+
+***多线程模型***  
+进程与线程的区别是什么？  
+进程是资源分配的最小单位，线程是CPU调度的最小单位。  
+做个简单的比喻：进程=火车，线程=车厢  
+* 线程在进程下行进（单纯的车厢无法运行）  
+* 一个进程可以包含多个线程（一辆火车可以有多个车厢）  
+* 不同进程间数据很难共享（一辆火车上的乘客很难换到另外一辆火车，比如站点换乘）  
+* 同一进程下不同线程间数据很易共享（A车厢换到B车厢很容易）  
+* 进程要比线程消耗更多的计算机资源（采用多列火车相比多个车厢更耗资源）  
+* 进程间不会相互影响，一个线程挂掉将导致整个进程挂掉（一列火车不会影响到另外一列火车，但是如果一列火车上中间的一节车厢着火了，将影响到所有车厢）  
+* 进程可以拓展到多机，进程最多适合多核（不同火车可以开在多个轨道上，同一火车的车厢不能在行进的不同的轨道上）  
+* 进程使用的内存地址可以上锁，即一个线程使用某些共享内存时，其他线程必须等它结束，才能使用这一块内存。（比如火车上的洗手间）－"互斥锁"  
+* 进程使用的内存地址可以限定使用量（比如火车上的餐厅，最多只允许多少人进入，如果满了需要在门口等，等有人出来了才能进去）－“信号量”  
+----摘自 [知乎-线程和进程的区别是什么？](https://www.zhihu.com/question/25532384)  
+
+
+阻塞，非阻塞，异步，同步是什么意思？  
+[知乎-1](https://zhuanlan.zhihu.com/p/72781268)  
+[知乎-1](https://www.zhihu.com/question/19732473/answer/241673170)  
+
+为什么有多进程还要有多线程？反过来也是？  
+为什么要产生协程？  
+
+创建线程示例：
+```python
+import threading
+import os
+def run(n):
+    print('current task', n)
+    print(f'pid: {os.getpid()}')
+
+
+run(1)
+run(2)
+
+if __name__ == '__main__':
+    t1 = threading.Thread(target=run, args=('thread 1', ))
+    t2 = threading.Thread(target=run, args=('thread 2', ))
+
+    t1.start()
+    t2.start()
+
+
+# current task 1
+# pid: 85873
+# current task 2
+# pid: 85873
+# current task thread 1
+# pid: 85873
+# current task thread 2
+# pid: 85873
+
+# 调用方
+# 阻塞 得到调用结果之前，线程会被挂起
+# 非阻塞 不能立即得到结果，不会阻塞线程
+
+# 被调用方
+# 同步 得到结果之间，调用不会返回
+# 异步 请求发出后，调用立即返回，没有返回结果，通过回调函数得到实际结果
+```
+
+```python
+import threading
+import os
+
+
+class MyThread(threading.Thread):
+    def __init__(self, n): 
+        super().__init__() # 重构闰年函数必须要写
+        self.n = n
+
+    def run(self):
+        print('current task:', self.n)
+        print(f'pid: {os.getpid()}')
+
+    
+if __name__ == '__main__':
+    t1 = MyThread('thread 1')
+    t2 = MyThread('thread 2')
+    print('t1: ', t1.is_alive())
+    t1.start()
+    print('t1: ', t1.is_alive())
+
+    t2.start()
+    print('t2: ', t2.is_alive())
+    print('t2: ', t2.getName())
+    
+
+
+    # 将t1 和 t2 加入到主线程中
+    t1.join()
+    t2.join()
+    print('t2: ', t2.is_alive())
+
+
+
+# current task: thread 1
+# pid: 86106
+# current task: thread 2
+# pid: 86106
+```
 
 ### 多线程：线程锁  
 
