@@ -142,14 +142,296 @@ if __name__ == '__main__':
 
 ### 多进程：多进程程序调试技巧  
 
+```python
+# 显示所涉及的各个进程ID，这是有一个扩展示例
+
+from multiprocessing import Process
+import os
+import multiprocessing
+
+def debug_info(title):
+    print('-'*20)
+    print(title)
+    print('模块名称', __name__)
+    print('父进程：', os.getppid())
+    print('子进程：', os.getpid())
+    print('-'*20)
+
+def f(name):
+    debug_info('function f')
+    print('hello', name)
+
+
+
+if __name__ == '__main__':
+    debug_info('main')
+    p = Process(target=f, args=('bob',))
+    p.start()
+
+    for p in multiprocessing.active_children():
+        print(f'子进程：{p.name} id:{str(p.pid)}')
+
+    print('进程结束')
+    print(f'CPU核心数量:{str(multiprocessing.cpu_count())}')
+
+    p.join()
+
+
+
+# --------------------
+# main
+# 模块名称 __main__
+# 父进程： 74957
+# 子进程： 75744
+# --------------------
+# 子进程：Process-1 id:75745
+# 进程结束
+# CPU核心数量:8
+# --------------------
+# function f
+# 模块名称 __main__
+# 父进程： 75744
+# 子进程： 75745
+# --------------------
+# hello bob
+# 在程序运行时，每一个进程将会占用一个cpu核心的
+# 一般创建子进程的数量和cpu核心数量相等的时候，效率相对较高
+```
+
+```python
+# multiprocessing.Process的run()方法
+
+import os
+import time
+from multiprocessing import Process
+
+class NewProcess(Process): # 继承Process类，创建一个新类
+    def __init__(self, num):
+        self.num = num
+        super().__init__()
+
+    def run(self): # 重新Process类中的run方法
+        while True:
+            print(f'我是进程：{self.num}，我的pid：{os.getpid()}')
+            time.sleep(1)
+
+
+for i in range(16):
+    p = NewProcess(i)
+    p.start()
+
+# 当不给NewProcess指定target时，会默认执行Process类里的run方法，这和指定target效果是一样的，只是将函数封装到类中之后便于理解和调用
+```
+
 ### 多进程：使用队列实现进程间的通信  
+为什么不能再使用变量作为进程间共享数据了？
+单个进程当中的变量赋值是在每一个进程的堆栈中，跨进程到另外一个进程中，堆栈信息是不会被传递过去的。这时你对变量赋值等操作，另一个进程是不可能知道的。这时就需要引入新的进程通信机制。
+主要共享方式：
+* 队列
+* 管道
+* 共享内存
+资源的抢占：
+* 加锁机制
 
+
+```python
+# 全局变量在多个进程中不能共享，在子进程中修改全局变量对父进程中的全局变量没有影响
+# 因为父进程在创建子进程时对全局变量做了一个备份，
+# 在子进程中的全局变量与子进程的全局变量完全是不同的两个变量
+# 全局变量在多个进程中是不能被共享的。
+
+import time
+import os
+from multiprocessing import Process
+
+num = 1000
+
+def run():
+    print(f'我是子进程，PID：{os.getpid()}')
+    global num
+    num += 1
+    print(f'子进程num = {num}')
+    print('子进程end')
+
+
+
+if __name__ == '__main__':
+    print(f'我是父进程，PID：{os.getpid()}')
+    num += 2
+    p = Process(target=run)
+    p.start()
+    p.join()
+    # 在子进程中修改全局变量num，父进程没有任何变化
+    print(f'父进程结束，num = {num}')
+
+
+# 我是父进程，PID：78309
+# 我是子进程，PID：78310
+# 子进程num = 1001
+# 子进程end
+# 父进程结束，num = 1000
+```
+
+
+队列示例：
+```python
+# multiprocessing 支持进程间的两种通信
+# 队列，来自官方文档中的一个简单的demo
+# Queue是一个类似queue.Queue的克隆
+# 现在有这样的一个需求：我们有两个进程，一个进程负责写（write），一个进程负责读（read）
+# 当写的进程写完某部分以后要把数据交给读的进程进行使用
+# write将写完数据交给队列，再由队列交给read
+
+from multiprocessing import Process, Queue
+
+def f(q):
+    q.put([42, None, 'hello'])
+
+
+if __name__ == '__main__':
+    q = Queue()
+    p = Process(target=f, args=(q,))
+    p.start()
+    print(q.get())
+    p.join()
+
+
+# 如果是多个进程在进行写入的话，会进行阻塞状态，是需要一个写入后才会有下一个再继续写入
+# 队列是线程和队列安全的
+# 先入先出 
+# blocked 
+
+```
+
+```python
+
+import time
+import os
+from multiprocessing import Process, Queue
+
+
+def write(w):
+    print(f'write process start... pid: {os.getpid()}')
+    for m in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']:
+        w.put(m) # 写入队列
+        time.sleep(1)
+    print('write process end.')
+
+
+def read1(r):
+    print(f'read process-1 start... pid: {os.getpid()}')
+    while True: # 阻塞 等待获取write值
+        value = r.get(True)
+        print(f'i am 1 value = {value}')
+
+    print('read process-1 end.') # 不会执行，直接被干掉了。
+    
+def read2(r):
+    print(f'read process-2 start... pid: {os.getpid()}')
+    while True:
+        value = r.get(True)
+        print(f'i am 2 value = {value}')
+
+
+if __name__ == '__main__':
+    # 父进程创建队列，并传递给子进程
+    print(f'parent process start... pid: {os.getpid()}')
+    q = Queue()
+    w = Process(target=write, args=(q,))
+    r1 = Process(target=read1, args=(q,))
+    r2 = Process(target=read2, args=(q,))
+    w.start()
+    r1.start()
+    r2.start()
+
+    w.join()
+    # r1 和 r2 进程是一个死循环，无法等待其结束，只能强行结束， 写进程结束了，所有读进程也可以结束
+    r1.terminate()
+    r2.terminate()
+
+    print('parent process end.')
+
+
+#     parent process start... pid: 79562
+# write process start... pid: 79563
+# read process-1 start... pid: 79564
+# i am 1 value = A
+# read process-2 start... pid: 79565
+# i am 1 value = B
+# i am 2 value = C
+# i am 1 value = D
+# i am 2 value = E
+# i am 1 value = F
+# i am 2 value = G
+# i am 1 value = H
+# i am 2 value = I
+# write process end.
+# parent process end.
+```
 ### 多进程：管道共享内存
+管道
+```python
+# 管道
+# 官方文档
+# Pipe() 函数返回一个由管道链接的连接对象，默认情况下是双工的（双向）
 
+from multiprocessing import Process, Pipe
+
+def f(conn):
+    conn.send([42, None, 'hello'])
+    conn.close()
+
+if __name__ == '__main__':
+    parent_conn, child_conn = Pipe()
+
+    p = Process(target=f, args=(child_conn,))
+    p.start()
+
+    print(parent_conn.recv())  # prints [42, None, 'hello']
+    p.join()
+
+# 返回的两个连接对象是Pipe() 表示管道的两端
+# 每个连接对象都有send和recv方法（相互之间）
+# 请注意，如果两个进程或两个线程同时尝试读取或写入管道的同一端，则管道中的数据可能会损坏
+
+# 传统的方式的变量是写在自己进程的内存中的，
+```
+共享内存
+```
+# 在 进行并发编程时，通常最好尽量避免使用共享状态，
+# 共享内存 shared memory可以使用Value Array将数据存储在共享内存映射中
+# 这里的 Array和numpy中的不同，它只能是一维，不能是多维的。
+# 同样 和 Value 一样，要定义数据类型，否则会报错
+
+from multiprocessing import Process, Value, Array
+
+def f(n, a):
+    n.value = 3.1415926
+    for i in a:
+        a[i] = -a[i]
+
+
+if __name__ == '__main__':
+    num = Value('d', 0.0)
+    arr = Array('i', range(10))
+    p = Process(target=f, args=(num, arr))
+
+    p.start()
+    p.join()
+
+    print(num.value)
+    print(arr[:])
+
+# 3.1415926
+# [0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
+
+# 创建 num 和 arr 时使用 ‘d’ 和 ‘i’，参数是array模块使用的类型 ‘typecode’：‘d’表示双精度浮点数，‘i’表示有符号整数
+# 这些共享对象将是进程和线程安全的
+```
 ### 多进程：锁机制解决资源抢占  
 
 ### 多进程：进程池  
-
+每一个进程都是需要消耗一个逻辑cpu的
 ### 多线程：创建线程  
 
 ### 多线程：线程锁  
