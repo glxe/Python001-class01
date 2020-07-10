@@ -677,6 +677,269 @@ if __name__ == '__main__':
 ```
 
 ### 多线程：线程锁  
+线程安全问题-锁机制
+无锁状态：
+```python
+import threading
+import os
+import time
+
+num = 0
+
+def addone(i):
+    global num
+    num += 1
+    time.sleep(1) # 必须休眠，否则观察不到脏数据
+    print(f'num value is {num}')
+
+
+
+for i in range(20):
+    t = threading.Thread(target=addone, args=(i,))
+    t.start()
+
+
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20
+# num value is 20 
+```
+普通锁：
+```python
+import threading
+import os
+import time
+
+num = 0
+mutex = threading.Lock() # 普通锁
+
+class MyThread(threading.Thread):
+    def run(self):
+        global num
+        time.sleep(1)
+        if mutex.acquire(1): # 加锁
+            num += 1
+            print(f'{self.name}: num value is {num}')
+        mutex.release() # 解锁
+
+if __name__ == '__main__':
+    for i in range(20):
+        t = MyThread()
+        t.start()
+
+
+# Thread-2: num value is 1
+# Thread-17: num value is 2
+# Thread-8: num value is 3
+# Thread-7: num value is 4
+# Thread-12: num value is 5
+# Thread-13: num value is 6
+# Thread-16: num value is 7
+# Thread-18: num value is 8
+# Thread-1: num value is 9
+# Thread-3: num value is 10
+# Thread-15: num value is 11
+# Thread-14: num value is 12
+# Thread-19: num value is 13
+# Thread-20: num value is 14
+# Thread-6: num value is 15
+# Thread-4: num value is 16
+# Thread-5: num value is 17
+# Thread-11: num value is 18
+# Thread-9: num value is 19
+# Thread-10: num value is 20
+```
+普通嵌套锁：
+```python
+import threading
+import os
+import time
+# 普通锁不可嵌套，RLock普通锁可嵌套
+num = 0
+mutex = threading.RLock() # 普通嵌套
+
+class MyThread(threading.Thread):
+    def run(self):
+        global num
+        time.sleep(1)
+        if mutex.acquire(1): # 加锁
+            print(f'thread {self.name}, get mutex')
+            mutex.acquire()
+            num += 1
+            print(f'{self.name}: num value is {num}')
+            mutex.release()
+        mutex.release() # 解锁
+
+if __name__ == '__main__':
+    for i in range(20):
+        t = MyThread()
+        t.start()
+
+# thread Thread-1, get mutex
+# Thread-1: num value is 1
+# thread Thread-5, get mutex
+# Thread-5: num value is 2
+# thread Thread-4, get mutex
+# Thread-4: num value is 3
+# thread Thread-2, get mutex
+# Thread-2: num value is 4
+# thread Thread-3, get mutex
+# Thread-3: num value is 5
+# thread Thread-9, get mutex
+# Thread-9: num value is 6
+# thread Thread-7, get mutex
+# Thread-7: num value is 7
+# thread Thread-11, get mutex
+# Thread-11: num value is 8
+# thread Thread-13, get mutex
+# Thread-13: num value is 9
+# thread Thread-15, get mutex
+# Thread-15: num value is 10
+# thread Thread-16, get mutex
+# Thread-16: num value is 11
+# thread Thread-6, get mutex
+# Thread-6: num value is 12
+# thread Thread-10, get mutex
+# Thread-10: num value is 13
+# thread Thread-12, get mutex
+# Thread-12: num value is 14
+# thread Thread-18, get mutex
+# Thread-18: num value is 15
+# thread Thread-14, get mutex
+# Thread-14: num value is 16
+# thread Thread-17, get mutex
+# Thread-17: num value is 17
+# thread Thread-8, get mutex
+# Thread-8: num value is 18
+# thread Thread-19, get mutex
+# Thread-19: num value is 19
+# thread Thread-20, get mutex
+# Thread-20: num value is 20
+```
+
+条件锁：
+```python
+import threading
+import os
+import time
+
+def condition():
+    ret = False
+    r = input('>>>')
+    if r == 'yes' or r == 'y':
+        ret = True
+    return ret
+
+
+def f(conn, i):
+    print(i)
+    conn.acquire()
+    conn.wait_for(condition) # 这个方法接受一个函数的返回值
+    print(i+100)
+    conn.release()
+
+c = threading.Condition()
+for i in range(5):
+    t = threading.Thread(target=f, args=(c, i,))
+    t.start()
+    t.join()
+# 条件锁的原理跟设计模式中的生产者/消费者(Producer/Consumer)模式类似
+
+```
+
+信号量：
+```python
+#信号量：内部实现一个计数器，占用信号量的线程数超过指定数值是阻塞 
+
+
+import threading
+import os
+import time
+
+
+def run(n):
+    semaphore.acquire()
+    print('run the thread: %s' % n)
+    time.sleep(1)
+    semaphore.release()
+
+if __name__ == '__main__':
+    num = 0
+    semaphore = threading.BoundedSemaphore(5) # 最多允许5个线程同时运行
+    for i in range(10):
+        t = threading.Thread(target=run, args=(i,))
+        t.start()
+
+
+
+# run the thread: 0
+# run the thread: 1
+# run the thread: 2
+# run the thread: 3
+# run the thread: 4
+# run the thread: 6
+# run the thread: 7
+# run the thread: 9
+# run the thread: 5
+# run the thread: 8
+```
+
+事件和定时器：
+```python
+# 事件：定义一个flag，set设置flag为True，clear设置flag为False
+
+import threading
+import os
+import time
+
+
+def func(e, i):
+    print(i)
+    e.wait() # 检测当前event是什么状态，如果是红灯则阻塞，如果是绿灯则继续往下执行，默认是红灯
+    print(i+100)
+
+event = threading.Event()
+
+for i in range(10):
+    t = threading.Thread(target=func, args=(event, i))
+    t.start()
+
+
+event.clear() # 主动将flag设置为红灯
+inp = input('>>>')
+
+if inp == '1':
+    event.set() # 主动将flag设置为绿灯
+
+
+# 使用redis实现分布式锁？
+
+
+# 定时器：指定n秒后执行
+from threading import Timer
+
+def hello():
+    print('hello world')
+
+t = Timer(1, hello) # 应该跟JavaScript里的settimeout一样的
+t.start()
+```
 
 ### 多线程：队列  
 
