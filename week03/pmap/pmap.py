@@ -3,6 +3,7 @@
 import os, sys, getopt, socket
 import re
 import struct
+import ping
 
 
 
@@ -18,12 +19,12 @@ def params(argv):
     try:
         options, args = getopt.getopt(argv,"hn:i:p:f:v:w:m:",["help", "num=","ip=", "port=", "way=", "v=", "result=", "m="])
     except getopt.GetoptError:
-        print('pmap.py -n 4 -f ping -ip 192.168.0.1-192.168.0.100 or pmap.py -n 10 -f tcp -ip 192.168.0.1 -w result.json')
+        print('pmap.py -n 4 -f ping -i 192.168.0.1-192.168.0.100 or pmap.py -n 10 -f tcp -i 192.168.0.1 -w result.json')
         sys.exit(2)
 
     for option, value in options:
         if option in ("-h", "--help"):
-            print('pmap.py -n 4 -f ping -ip 192.168.0.1-192.168.0.100 or pmap.py -n 10 -f tcp -ip 192.168.0.1 -w result.json')
+            print('pmap.py -n 4 -f ping -i 192.168.0.1-192.168.0.100 or pmap.py -n 10 -f tcp -i 192.168.0.1 -w result.json')
         if option in ("-n", "--num"):
             num = value
         if option in ("-i", "--ip"):
@@ -43,7 +44,7 @@ def params(argv):
 
 def check_ip(host):
     print(f'ip: {host}')
-    result = host
+    result, _ = ping.ping(host)
     return result
 
 
@@ -87,14 +88,14 @@ if __name__ == "__main__":
         print('Invalid IP range!')
         sys.exit()
     ip_range_max = end_ip_int - strat_ip_int
+    active_total = 0
     for i in range(0, ip_range_max + 1 ):
         host = int2ip(strat_ip_int + i)
-        print(check_ip(host))
+        if check_ip(host):
+            active_total += 1
+            print(f'ip: {host} is active')
 
-    print(strat_ip_int)
-    print(end_ip_int)
-
-    print(end_ip_int - strat_ip_int)
+    print(f'active ip total: {active_total}')
 
     print(f"ip: {ip}, port: {port}, way: {way}, num: {num}, result: {result}, v: {v}, m: {m}")
 
