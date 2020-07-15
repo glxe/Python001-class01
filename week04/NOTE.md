@@ -43,6 +43,41 @@ Pandas 就像一把万能瑞士军刀，下面仅列出了它的部分优势 ：
 * 时间序列：支持日期范围生成、频率转换、移动窗口统计、移动窗口线性回归、日期位移等时间序列功能。
 * 这些功能主要是为了解决其它编程语言、科研环境的痛点。处理数据一般分为几个阶段：数据整理与清洗、数据分析与建模、数据可视化与制表，Pandas 是处理数据的理想工具。
 
+
+Pandas 的一些示例：
+```python
+import pandas as pd
+import numpy as np
+import matplotlib as plt
+import os 
+
+
+pwd = os.path.dirname(os.path.realpath(__file__))
+
+file = os.path.join(pwd, 'data.csv')
+print(file)
+
+df = pd.read_csv(file)
+
+print(df)
+# 筛选标题为 还行 这一列
+print(df['还行'])
+
+# 切片方式筛选
+print(df[:3])
+
+# 增加列名
+df.columns = ['star', 'vote', 'shorts']
+
+# 显示特定的行、列
+df.loc[1:3, ['star']]
+
+# 过滤数据
+df['star'] == '力荐'
+
+
+```
+
 #### pandas 基本数据类型  
 
 
