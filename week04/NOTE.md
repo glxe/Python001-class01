@@ -44,12 +44,115 @@ Pandas 就像一把万能瑞士军刀，下面仅列出了它的部分优势 ：
 * 这些功能主要是为了解决其它编程语言、科研环境的痛点。处理数据一般分为几个阶段：数据整理与清洗、数据分析与建模、数据可视化与制表，Pandas 是处理数据的理想工具。
 
 #### pandas 基本数据类型  
+Pandas 两个数据类型
+* Series （一维）
+* DataFrame （二维）
+
+Series示例：
+```python
+import pandas as pd
+import numpy as np
+
+# 从列表创建Series
+pd.Series(['a', 'b', 'c'])
+# 0    a
+# 1    b
+# 2    c
+# dtype: object
+# 自动创建索引
+
+# 通过字典创建带索引的Series
+s1 = pd.Series({'a':11, 'b':22, 'c':33})
+# 通过关键字创建带索引的Series
+s2 = pd.Series([11, 22, 33], index = ['a', 'b', 'c'])
+s1
+s2
+
+# 获取全部索引
+s1.index
+# 获取全部值
+s1.values
+
+# 类型
+type(s1.values)    # <class 'numpy.ndarray'>
+type(np.array(['a', 'b']))
+
+# 转换为列表
+s1.values.tolist()
+
+# 使用index会提升查询性能
+#    如果index唯一，pandas会使用哈希表优化，查询性能为O(1)
+#    如果index有序不唯一，pandas会使用二分查找算法，查询性能为O(logN)
+#    如果index完全随机，每次查询都要扫全表，查询性能为O(N)
+
+# 取出email
+emails = pd.Series(['abc at amazom.com', 'admin1@163.com', 'mat@m.at', 'ab@abc.com'])
+import re
+pattern ='[A-Za-z0-9._]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,5}'
+mask = emails.map(lambda x: bool(re.match(pattern, x)))
+emails[mask]
+```
+
+DataFrame 示例：
+```python
+  
+import pandas as pd
 
 
+# 列表创建dataframe
+df1 = pd.DataFrame(['a', 'b', 'c', 'd'])
+# 嵌套列表创建dataframe
+df2 = pd.DataFrame([
+                     ['a', 'b'], 
+                     ['c', 'd']
+                    ])
+# 自定义列索引
+df2.columns= ['one', 'two']
+# 自定义行索引
+df2.index = ['first', 'second']
 
+df2
+# 可以在创建时直接指定 DataFrame([...] , columns='...', index='...' )
+# 查看索引
+df2.columns, df2.index
+type(df2.values)
+```
 #### 数据导入  
 
+数据一般都是从execl，csv，或者数据等作为来源进行导入的。
+当然Pandas 都是支持这些的，使用的read_*()的函数
+示例：
+```python
+import pandas as pd
+# pip install xlrd ,execl 文件需要这个库的支持
+# 导入excel文件
+excel1 = pd.read_excel(r'1.xlsx')
+excel1
+# 指定导入哪个Sheet
+pd.read_excel(r'1.xlsx',sheet_name = 0)
 
+# 支持其他常见类型
+pd.read_csv(r'c:\file.csv',sep=' ', nrows=10, encoding='utf-8')
+
+pd.read_table( r'file.txt' , sep = ' ')
+
+import pymysql
+sql  =  'SELECT *  FROM mytable'
+conn = pymysql.connect('ip','name','pass','dbname','charset=utf8')
+df = pd.read_sql(sql,conn)
+
+
+# 熟悉数据
+# 显示前几行
+excel1.head(3)
+
+# 行列数量
+excel1.shape
+
+# 详细信息
+excel1.info()
+excel1.describe()
+```
 
 #### 数据预处理  
 
