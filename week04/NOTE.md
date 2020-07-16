@@ -155,8 +155,48 @@ excel1.describe()
 ```
 
 #### 数据预处理  
+在实际处理原始数据的时候，就像自己买菜做饭，你去菜场买的菜就是原始数据，当然原始数据的获取途径有多种，爬虫爬取，自己生产的等。
+然后你需要把买回来的菜需要先第一步清理，把坏的菜叶，或者明显的缺胳膊少腿的给清理掉。原始数据也是，需要先把缺失的数据，重复的数据
+该填充的填充，该删除的删除。这就是数据预处理
+
+示例：
+```python
+
+import pandas as pd
+import numpy as np
+
+x = pd.Series([1, 2, 5, np.nan, 78, 5, np.nan])
+print(x)
+# 检验是否存在缺失值
+print(x.hasnans)
+
+# 将缺失值填充为平均值
+ss = x.fillna(value = x.mean())
+print(ss)
 
 
+
+df = pd.DataFrame({
+    "A": [1,2,3],
+    "B": [89, np.nan, 43],
+    "C": [np.nan, 56, 89],
+    "D": [63, 4, 9]
+})
+
+print(df.isnull().sum()) # 查看缺失值汇总
+
+print(df.ffill()) # 用上一行填充
+print(df.ffill(axis=1)) # 用前一列填充
+
+print(df)
+
+print(df.info())
+print(df.dropna())
+
+print(df.fillna('无'))
+
+print(df.drop_duplicates())
+```
 #### 数据调整  
 
 
