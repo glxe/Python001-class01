@@ -198,12 +198,106 @@ print(df.fillna('无'))
 print(df.drop_duplicates())
 ```
 #### 数据调整  
+```python
+
+import numpy as np
+import pandas as pd
+
+# 行列调整
+df = pd.DataFrame({
+    "A": [5, 3, 4],
+    "B": [2, None, 6],
+    "C": [9, 2, None],
+    "D": [4, 8, 3]
+})
+
+# 列的选择，多个列的要用列表
+print(df[['A', 'C']])
+
+# 某己列
+print(df.iloc[:, [0, 3]])  # : 表示所有行，获取第一列和第四列
+print('----------------------')
+# 行选择
+print(df.loc[[0, 2]])  # 选择第一行和第三行
+print(df.loc[0:2])  # 选择第一行到第三行
+
+# 比较
+print(df[(df['A'] < 5) & (df['C'] < 4)])  # A列小于5 并且 C小于4, 括号的优先级大于&
+print('----------------------')
+
+# 数值替换
+# 一对一替换
+print(df['C'].replace(2, 3))
 
 
+print(df.replace(np.nan, 0))
+
+# 多对一替换
+df.replace([4, 5, 8], 1000)
+# 多对多替换
+df.replace({4: 400, 5: 500, 8: 800})
+# 排序
+# 按照指定列降序排列
+df.sort_values(by=['A'], ascending=False)
+# 多列排序
+df.sort_values(by=['A', 'C'], ascending=[True, False])
+# 删除
+# 删除列
+df.drop('A', axis=1)
+# 删除行
+df.drop(3, axis=0)
+# 删除特定行
+df[df['A'] < 4]
+# 行列互换
+df.T
+# 索引重塑
+df4 = pd.DataFrame([
+    ['a', 'b', 'c'],
+    ['d', 'e', 'f']
+],
+    columns=['one', 'two', 'three'],
+    index=['first', 'second']
+)
+df4.stack()
+df4.unstack()
+df4.stack().reset_index()
+```
 
 #### 基本操作  
 
+示例：
+```python
+import pandas as pd
+df = pd.DataFrame({"A":[5,3,None,4], 
+                 "B":[None,2,4,3], 
+                 "C":[4,3,8,5], 
+                 "D":[5,4,2,None]}) 
+# 算数运算
+# 两列之间的加减乘除
+df['A'] + df['C'] 
 
+# 任意一列加/减一个常数值，这一列中的所有值都加/减这个常数值
+df['A'] + 5
+
+# 比较运算
+df['A'] > df ['C']  
+
+# count非空值计数
+df.count()
+
+# 非空值每列求和
+df.sum()
+df['A'].sum()
+
+# mean求均值
+# max求最大值
+# min求最小值
+# median求中位数  
+# mode求众数
+# var求方差
+# std求标准差
+
+```
 
 #### 分组聚合  
 
