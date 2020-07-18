@@ -79,23 +79,260 @@ df['star'] == '力荐'
 ```
 
 #### pandas 基本数据类型  
+Pandas 两个数据类型
+* Series （一维）
+* DataFrame （二维）
+
+Series示例：
+```python
+import pandas as pd
+import numpy as np
+
+# 从列表创建Series
+pd.Series(['a', 'b', 'c'])
+# 0    a
+# 1    b
+# 2    c
+# dtype: object
+# 自动创建索引
+
+# 通过字典创建带索引的Series
+s1 = pd.Series({'a':11, 'b':22, 'c':33})
+# 通过关键字创建带索引的Series
+s2 = pd.Series([11, 22, 33], index = ['a', 'b', 'c'])
+s1
+s2
+
+# 获取全部索引
+s1.index
+# 获取全部值
+s1.values
+
+# 类型
+type(s1.values)    # <class 'numpy.ndarray'>
+type(np.array(['a', 'b']))
+
+# 转换为列表
+s1.values.tolist()
+
+# 使用index会提升查询性能
+#    如果index唯一，pandas会使用哈希表优化，查询性能为O(1)
+#    如果index有序不唯一，pandas会使用二分查找算法，查询性能为O(logN)
+#    如果index完全随机，每次查询都要扫全表，查询性能为O(N)
+
+# 取出email
+emails = pd.Series(['abc at amazom.com', 'admin1@163.com', 'mat@m.at', 'ab@abc.com'])
+import re
+pattern ='[A-Za-z0-9._]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,5}'
+mask = emails.map(lambda x: bool(re.match(pattern, x)))
+emails[mask]
+```
+
+DataFrame 示例：
+```python
+  
+import pandas as pd
 
 
+# 列表创建dataframe
+df1 = pd.DataFrame(['a', 'b', 'c', 'd'])
+# 嵌套列表创建dataframe
+df2 = pd.DataFrame([
+                     ['a', 'b'], 
+                     ['c', 'd']
+                    ])
+# 自定义列索引
+df2.columns= ['one', 'two']
+# 自定义行索引
+df2.index = ['first', 'second']
 
+df2
+# 可以在创建时直接指定 DataFrame([...] , columns='...', index='...' )
+# 查看索引
+df2.columns, df2.index
+type(df2.values)
+```
 #### 数据导入  
 
+数据一般都是从execl，csv，或者数据等作为来源进行导入的。
+当然Pandas 都是支持这些的，使用的read_*()的函数
+示例：
+```python
+import pandas as pd
+# pip install xlrd ,execl 文件需要这个库的支持
+# 导入excel文件
+excel1 = pd.read_excel(r'1.xlsx')
+excel1
+# 指定导入哪个Sheet
+pd.read_excel(r'1.xlsx',sheet_name = 0)
 
+# 支持其他常见类型
+pd.read_csv(r'c:\file.csv',sep=' ', nrows=10, encoding='utf-8')
+
+pd.read_table( r'file.txt' , sep = ' ')
+
+import pymysql
+sql  =  'SELECT *  FROM mytable'
+conn = pymysql.connect('ip','name','pass','dbname','charset=utf8')
+df = pd.read_sql(sql,conn)
+
+
+# 熟悉数据
+# 显示前几行
+excel1.head(3)
+
+# 行列数量
+excel1.shape
+
+# 详细信息
+excel1.info()
+excel1.describe()
+```
 
 #### 数据预处理  
+在实际处理原始数据的时候，就像自己买菜做饭，你去菜场买的菜就是原始数据，当然原始数据的获取途径有多种，爬虫爬取，自己生产的等。
+然后你需要把买回来的菜需要先第一步清理，把坏的菜叶，或者明显的缺胳膊少腿的给清理掉。原始数据也是，需要先把缺失的数据，重复的数据
+该填充的填充，该删除的删除。这就是数据预处理
+
+示例：
+```python
+
+import pandas as pd
+import numpy as np
+
+x = pd.Series([1, 2, 5, np.nan, 78, 5, np.nan])
+print(x)
+# 检验是否存在缺失值
+print(x.hasnans)
+
+# 将缺失值填充为平均值
+ss = x.fillna(value = x.mean())
+print(ss)
 
 
+
+df = pd.DataFrame({
+    "A": [1,2,3],
+    "B": [89, np.nan, 43],
+    "C": [np.nan, 56, 89],
+    "D": [63, 4, 9]
+})
+
+print(df.isnull().sum()) # 查看缺失值汇总
+
+print(df.ffill()) # 用上一行填充
+print(df.ffill(axis=1)) # 用前一列填充
+
+print(df)
+
+print(df.info())
+print(df.dropna())
+
+print(df.fillna('无'))
+
+print(df.drop_duplicates())
+```
 #### 数据调整  
+```python
+
+import numpy as np
+import pandas as pd
+
+# 行列调整
+df = pd.DataFrame({
+    "A": [5, 3, 4],
+    "B": [2, None, 6],
+    "C": [9, 2, None],
+    "D": [4, 8, 3]
+})
+
+# 列的选择，多个列的要用列表
+print(df[['A', 'C']])
+
+# 某己列
+print(df.iloc[:, [0, 3]])  # : 表示所有行，获取第一列和第四列
+print('----------------------')
+# 行选择
+print(df.loc[[0, 2]])  # 选择第一行和第三行
+print(df.loc[0:2])  # 选择第一行到第三行
+
+# 比较
+print(df[(df['A'] < 5) & (df['C'] < 4)])  # A列小于5 并且 C小于4, 括号的优先级大于&
+print('----------------------')
+
+# 数值替换
+# 一对一替换
+print(df['C'].replace(2, 3))
 
 
+print(df.replace(np.nan, 0))
+
+# 多对一替换
+df.replace([4, 5, 8], 1000)
+# 多对多替换
+df.replace({4: 400, 5: 500, 8: 800})
+# 排序
+# 按照指定列降序排列
+df.sort_values(by=['A'], ascending=False)
+# 多列排序
+df.sort_values(by=['A', 'C'], ascending=[True, False])
+# 删除
+# 删除列
+df.drop('A', axis=1)
+# 删除行
+df.drop(3, axis=0)
+# 删除特定行
+df[df['A'] < 4]
+# 行列互换
+df.T
+# 索引重塑
+df4 = pd.DataFrame([
+    ['a', 'b', 'c'],
+    ['d', 'e', 'f']
+],
+    columns=['one', 'two', 'three'],
+    index=['first', 'second']
+)
+df4.stack()
+df4.unstack()
+df4.stack().reset_index()
+```
 
 #### 基本操作  
 
+示例：
+```python
+import pandas as pd
+df = pd.DataFrame({"A":[5,3,None,4], 
+                 "B":[None,2,4,3], 
+                 "C":[4,3,8,5], 
+                 "D":[5,4,2,None]}) 
+# 算数运算
+# 两列之间的加减乘除
+df['A'] + df['C'] 
 
+# 任意一列加/减一个常数值，这一列中的所有值都加/减这个常数值
+df['A'] + 5
+
+# 比较运算
+df['A'] > df ['C']  
+
+# count非空值计数
+df.count()
+
+# 非空值每列求和
+df.sum()
+df['A'].sum()
+
+# mean求均值
+# max求最大值
+# min求最小值
+# median求中位数  
+# mode求众数
+# var求方差
+# std求标准差
+
+```
 
 #### 分组聚合  
 
