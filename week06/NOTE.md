@@ -129,11 +129,52 @@ def index(request):
 ```
 
 ## 模块和包
+***
+* 模块：.py结尾的python程序  
+* 包：存放多个模块的目录  
+* `__init__.py`：包运行的初始化文件，可以是空文件  
 
-        
+常见以下几种导入方式：`import`, `from ... import ...`, `from ... import ... as ...`  
+
+执行：
+```python
+if __name__ == '__main__':
+    fun()
+# 这个就是可执行，可模块导入
+```
+import 引用包的时候，会默认的去python的 site-packages 目录里找。
+`from . import package` ，这个是在当前的目录里寻找模块。  
 ## 让URL支持变量
-        
+***
+类似于node的路由表。  
+* 带变量的URL，Django 支持对URL设置变量，URL变量类型包括：
+    - str  
+    - int  
+    - slug(备注)  
+    - uuid  
+    - path    
+
+`path('<int:year>', views.myyear)`，在函数里，函数的参数时 `year`  
+在views文件的函数里，第一个参数必须是 `request`,  第二个才是业务参数，可以是可变长参数 `**kwargs`, 然后在函数里使用 `kwargs['name']` 来获取值。
+
+```python
+# path('<int:year>', views.myyear)
+def myyear(request, year):
+    print(dir(request))
+    for r in request:
+        print(r)
+    return HttpResponse(year)
+
+
+# path('<int:year>/<str:name>', views.name)
+def name(request, **kwargs):
+    return HttpResponse(f"year: {kwargs['year']}, name: {kwargs['name']}")
+```
+
 ## URL正则和自定义过滤器
+***
+当URL的变量已经不支持你的业务需求了，则正则和自定义过滤器就派上用场了。  
+`re_path('(?P<year>[0-9]{4}).html', views.myyear, name='urlyear')`, 正则需要使用 `re_path` 这个方法
 
 ## view视图快捷方式
         
