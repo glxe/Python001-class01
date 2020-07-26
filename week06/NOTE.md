@@ -89,9 +89,47 @@ index/
 主要对 `INSTALLED_APPS` 配置添加自己的应用程序和 `DATABASES` 改成mysql
 ## urls调度器
 ***
-主要用于接收用户的请求信息，附带一些django自己需要的信息，有django中间件。
+定义程序的入口，主要用于接收用户的请求信息，附带一些django自己需要的信息，有django中间件。
+***Django如何处理一个求情***  
+当一个用户请求Django站点的一个页面：  
+1. 如果传入 `HttpRequest` 对象拥有 `urlconf` 属性（通过中间件设置），它的值将被用来代替 `ROOT_URLCONF` 设置。  
+2. Django 加载 `URLconf` 模块并寻找可用的 `urlpatterns`，Django一次匹配每个URL模式，在与请求的URL匹配的第一个模式停下来。  
+3. 一旦有URL匹配成功，Django导入并调用相关的视图，视图会获得如下参数：
+    - 一个 `HTTPRequest` 实例  
+    - 一个或多个位置参数提供  
+4. 如果没有 URL 匹配，或者匹配过程中出现了异常，Django 会调用一个适当的错误处理视图。  
+
+urls.py 的基本配置
+```python
+from django.contrib import admin
+from django.urls import path, ***include***
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('index.urls')),
+]
+```
+
+```python
+# index/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.index),
+]
+```
+```python
+# index/views.py
+from django.shortcuts import render
+from django.http import HttpResponse
+# Create your views here.
+def index(request):
+    return HttpResponse('Hello Django!')
+```
 
 ## 模块和包
+
         
 ## 让URL支持变量
         
