@@ -174,28 +174,71 @@ def name(request, **kwargs):
 ## URL正则和自定义过滤器
 ***
 当URL的变量已经不支持你的业务需求了，则正则和自定义过滤器就派上用场了。  
-`re_path('(?P<year>[0-9]{4}).html', views.myyear, name='urlyear')`, 正则需要使用 `re_path` 这个方法
+`re_path('(?P<year>[0-9]{4}).html', views.myyear, name='urlyear')`, 正则需要使用 `re_path` 这个方法  
 
 ## view视图快捷方式
-        
+view视图：  
+|响应类型|说明|
+|-|-|
+|HttpResponse('Hello World!')|HTTP状态码 200，请求已成功被服务器接收|
+|HttpResponseRedirect('/admin/')|HTTP状态码 302，重定向Admin站点的URL|
+|HttpResponsePremanentRedirect('/admin/')|HTTP状态码 301，永久重定向admin站点URL|
+|HttpResponseBadRequest('BadRequest')|HTTP状态码 400，访问的页面不存在或者请去错误|
+|HttpResponseNotFound('Not Found')|HTTP状态码 404，页面不存在或者网页的URL失效|
+|HttpResponseForbidden('Forbidden')|HTTP状态码 403，没有访问权限|
+|HttpResponseNotAllowed('Not Allowed Get')|HTTP状态码 405，不允许使用该请求方式|
+|HttpResponseServerError('Server Error')|HTTP状态码 500，服务器内部错误|
+
+Django 快捷函数  
+`render()`  
+将给定的模板与给定的上下文字典组合在一起，并以渲染的文本返回一个 `HttpResponse` 对象  
+`redirect()`  
+将一个 `HttpResponseRedirect` 返回到传递的参数的适当URL  
+`get_object_or_404()`  
+在给定的模型管理器(model manager)上调用get()，但它会引发 Http 404 而不是模型的DoesNoExist异常  
+
 ## 使用ORM创建数据表
-        
+***
+模型与数据库  
+* 每个模型都是一个 Python 的类，这些类继承 `django.db.models.Model`  
+* 模型类的每个属性都对应数据库表的字段  
+* 利用这些，Django提供一个自动生成访问数据的API  
+```python
+from django.db import models
+class Person(models.Model):
+    id = models.IntegerField(primary_key=True)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+# 对应下面的数据库表
+```
+
+```sql
+CREATE TABLE myapp_person (
+    "id" serial NOT NULL PRIMARY KEY,
+    "first_name" varchar(30) NOT NULL,
+    "last_name" varchar(30) NOT NULL,
+);
+```
+`python manage.py makemigrations`, `python manage.py migrate`
+
 ## ORM API
-        
+***     
 ## Django模板开发
-        
+***
+* 变量：  
+    - `My first name is {{ first_name }}. My last name is {{ last_name }}.` 
+* 标签：
+    - `{% if user.is_authenticated %}Hello, {{ user.username }}.{% endif %}`
 ## 展示数据库中的内容
-        
+
 ## 豆瓣页面展示功能的需求分析
-        
+
 ## urlconf与models 配置
-        
+
 ## views视图的编写
-        
+
 ## 结合bootstrap模板进行开发
-        
+
 ## 如何阅读Django的源代码
 
 ## manage.py源码分析
-
-        
