@@ -32,7 +32,7 @@ file = os.path.join(pwd, 'data.csv')
 
 localtime = time.strftime("%Y-%m-%d %H:%M:%S" ,  time.localtime() )
 
-with open(file, 'r') as f:
+with open(file, 'r', encoding='UTF-8') as f:
     reader = csv.reader(f)
     i = 0
     for row in reader:
@@ -40,11 +40,12 @@ with open(file, 'r') as f:
         if row:
             group_id = i / 5
 
-            sql = "INSERT INTO `documents` (`group_id`, `date_added`, `title`, `content`) VALUES (%s, %s, %s, %s)"
+            sql = "INSERT INTO `documents` (`group_id`, `date_added`, `content`, `star`, `comments`) VALUES (%s, %s, %s, %s, %s)"
 
             try:
                 # 执行sql语句
-                cursor.execute(sql, (group_id, localtime, row[2], row[2]))
+                # print(row)
+                cursor.execute(sql, (group_id, localtime, row[2], row[1], row[0]))
             except Exception as e:
                 print(e)
             # print(row[2])
