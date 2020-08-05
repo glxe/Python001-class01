@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/ant-design-vue@1.6.4/dist/antd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/ant-design-vue@1.6.4/dist/antd.min.css">
+    <title>豆瓣电影影评</title>
+    <script type='text/javascript'>
+    var results = {{ results|safe }};
+    console.log(results)
+    </script>
+</head>
+<body>
+<div id="app" style="margin: 20px 20px">
+    <template>
+  <a-table :columns="columns" :data-source="data" bordered>
+    <template slot="name" slot-scope="text">
+      <a>{{ text }}</a>
+    </template>
+  </a-table>
+</template>
+</div>
+
+<script>
+const columns = [
+  {
+    title: 'Content',
+    dataIndex: 'content',
+    scopedSlots: { customRender: 'content' },
+  },
+  {
+    title: 'Star',
+    dataIndex: 'star',
+  },
+  {
+    title: 'Data add',
+    dataIndex: 'data_added',
+  },
+];
+    var app = new Vue({
+        el: '#app',
+        data: {
+            search: '',
+            results: results,
+            columns: columns
+        },
+    })
+</script>
+</body>
+</html>
