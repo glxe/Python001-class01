@@ -44,8 +44,8 @@ with open(file, 'r', encoding='UTF-8') as f:
 
             try:
                 # 执行sql语句
-                # print(row)
-                cursor.execute(sql, (group_id, localtime, row[2], row[1], row[0]))
+                print(row)
+                # cursor.execute(sql, (group_id, localtime, row[2], row[1], row[0]))
             except Exception as e:
                 print(e)
             # print(row[2])

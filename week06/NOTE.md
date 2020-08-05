@@ -219,8 +219,10 @@ CREATE TABLE myapp_person (
     "last_name" varchar(30) NOT NULL,
 );
 ```
+这是由模型创建表
 `python manage.py makemigrations`, `python manage.py migrate`
-
+由表创建模型
+`python manage.py inspectdb > app_name/models.py`
 ## ORM API
 ***     
 ## Django模板开发
