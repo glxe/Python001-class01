@@ -5,17 +5,24 @@ import json
 from .models import Documents
 
 from django.core import serializers
+from datetime import *
+import time
 # Create your views here.
 
 
 def index(request):
+    key = request.GET.get('key')
+    print(key)
     comments_list = list()
-    info = Documents.objects.filter(star__gt=3)[:100]
-    print(info)
+    if key:
+        info = Documents.objects.filter(content__contains = key)[:100]
+    else:
+        info = Documents.objects.filter()[:100]
+    k = 0
     for p in info:
-        comments_list.append({'content': p.content, 'star': p.star, 'group_id': p.group_id, 'date_added': p.date_added})
+        comments_list.append({'key': k, 'content': p.content, 'star': p.star, 'group_id': p.group_id, 'date_added': p.date_added.strftime('%Y-%m-%d %H:%M:%S')})
+        k += 1
 
-    print(comments_list)
     # # [comments_list.append({k: v}) for k, v in info]
     # data = serializers.serialize("json", comments_list)
     # data = json.loads(data)
