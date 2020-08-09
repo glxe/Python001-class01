@@ -38,3 +38,7 @@ setattr(Human, 'newattr1', 'value')
 
 print(dir(Human))
 print(Human.__dict__)
+
+print(type(()))
+print(().__class__)
+print(().__class__.__base__.__subclasses__())
